@@ -1,37 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-const mockMessages = [
-  {
-    id: '1',
-    type: 'system',
-    content: 'Hello! Add your references and describe your idea. I\'ll ask questions to help you brainstorm.',
-  },
-  {
-    id: '2',
-    type: 'llm',
-    content: 'That\'s a fascinating start. Have you considered how you will measure the impact of attention mechanisms on model interpretability and its implications for downstream task performance?',
-  },
-];
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import type { ChatMessage } from "@shared/schema";
 
 export default function BrainstormingMode() {
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState(mockMessages);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const { data: messages = [] } = useQuery<ChatMessage[]>({
+    queryKey: ['/api/chat/messages'],
+    refetchInterval: 2000,
+  });
+
+  const sendMutation = useMutation({
+    mutationFn: (content: string) => 
+      apiRequest('/api/chat/messages', 'POST', { type: 'user', content }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/chat/messages'] });
+      setInput('');
+    },
+  });
 
   const handleSend = () => {
-    if (!input.trim()) return;
-    
-    console.log('Sending message:', input);
-    setMessages([...messages, { 
-      id: Date.now().toString(), 
-      type: 'user', 
-      content: input 
-    }]);
-    setInput('');
+    if (!input.trim() || sendMutation.isPending) return;
+    sendMutation.mutate(input);
   };
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   return (
     <div className="flex flex-col h-full">
@@ -48,6 +51,7 @@ export default function BrainstormingMode() {
           }}
           className="min-h-[100px] resize-none"
           data-testid="input-idea"
+          disabled={sendMutation.isPending}
         />
         <div className="flex justify-end mt-2">
           <Button 
@@ -55,14 +59,15 @@ export default function BrainstormingMode() {
             size="sm"
             className="gap-2"
             data-testid="button-send-idea"
+            disabled={!input.trim() || sendMutation.isPending}
           >
             <Send className="w-4 h-4" />
-            Send
+            {sendMutation.isPending ? 'Sending...' : 'Send'}
           </Button>
         </div>
       </div>
 
-      <ScrollArea className="flex-1 p-4">
+      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
         <div className="space-y-4 max-w-3xl mx-auto">
           {messages.map((message) => (
             <div

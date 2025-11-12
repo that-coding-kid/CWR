@@ -1,19 +1,25 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-const mockScores = [
-  { metric: 'Clarity', score: 8.5 },
-  { metric: 'Rigor', score: 7.8 },
-  { metric: 'Conciseness', score: 9.2 },
-  { metric: 'Novelty', score: 8.0 },
-  { metric: 'Structure', score: 8.7 },
-];
+import { Card, CardContent } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import type { QualityScore } from "@shared/schema";
 
 export default function GradingPanel() {
+  const { data: scores } = useQuery<QualityScore>({
+    queryKey: ['/api/quality-scores'],
+  });
+
+  const metrics = scores ? [
+    { metric: 'Clarity', score: scores.clarity },
+    { metric: 'Rigor', score: scores.rigor },
+    { metric: 'Conciseness', score: scores.conciseness },
+    { metric: 'Novelty', score: scores.novelty },
+    { metric: 'Structure', score: scores.structure },
+  ] : [];
+
   return (
     <div className="p-4">
       <h3 className="text-sm font-semibold mb-3" data-testid="text-quality-score-title">Quality Score</h3>
       <div className="space-y-2">
-        {mockScores.map((item) => (
+        {metrics.map((item) => (
           <Card key={item.metric} className="hover-elevate" data-testid={`card-score-${item.metric.toLowerCase()}`}>
             <CardContent className="p-3 flex items-center justify-between">
               <span className="text-sm font-medium">{item.metric}</span>
