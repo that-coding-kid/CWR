@@ -9,7 +9,7 @@ import type { ChatMessage } from "@shared/schema";
 
 export default function BrainstormingMode() {
   const [input, setInput] = useState('');
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data: messages = [] } = useQuery<ChatMessage[]>({
     queryKey: ['/api/chat/messages'],
@@ -31,9 +31,7 @@ export default function BrainstormingMode() {
   };
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   return (
@@ -67,7 +65,7 @@ export default function BrainstormingMode() {
         </div>
       </div>
 
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+      <ScrollArea className="flex-1 p-4">
         <div className="space-y-4 max-w-3xl mx-auto">
           {messages.map((message) => (
             <div
@@ -88,6 +86,7 @@ export default function BrainstormingMode() {
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
     </div>

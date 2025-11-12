@@ -52,19 +52,17 @@ export default function FeedbackMode() {
   }, [section]);
 
   useEffect(() => {
+    if (isLoading) return;
+    
     const timer = setTimeout(() => {
-      if (content && !isLoading) {
-        saveMutation.mutate({ section, content });
-      }
+      saveMutation.mutate({ section, content });
     }, 1000);
 
     return () => clearTimeout(timer);
   }, [content, section, isLoading]);
 
   const handleSectionChange = (newSection: string) => {
-    if (content && section) {
-      saveMutation.mutate({ section, content });
-    }
+    saveMutation.mutate({ section, content });
     setSection(newSection);
   };
 
