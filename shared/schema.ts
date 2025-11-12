@@ -16,3 +16,55 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+export const referencePaperSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  name: z.string(),
+});
+
+export const insertReferencePaperSchema = referencePaperSchema.omit({ id: true });
+
+export type ReferencePaper = z.infer<typeof referencePaperSchema>;
+export type InsertReferencePaper = z.infer<typeof insertReferencePaperSchema>;
+
+export const chatMessageSchema = z.object({
+  id: z.string(),
+  type: z.enum(['system', 'user', 'llm']),
+  content: z.string(),
+});
+
+export const insertChatMessageSchema = chatMessageSchema.omit({ id: true });
+
+export type ChatMessage = z.infer<typeof chatMessageSchema>;
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+
+export const feedbackItemSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  title: z.string(),
+  content: z.string(),
+  section: z.string(),
+});
+
+export const insertFeedbackItemSchema = feedbackItemSchema.omit({ id: true });
+
+export type FeedbackItem = z.infer<typeof feedbackItemSchema>;
+export type InsertFeedbackItem = z.infer<typeof insertFeedbackItemSchema>;
+
+export const qualityScoreSchema = z.object({
+  clarity: z.number(),
+  rigor: z.number(),
+  conciseness: z.number(),
+  novelty: z.number(),
+  structure: z.number(),
+});
+
+export type QualityScore = z.infer<typeof qualityScoreSchema>;
+
+export const sectionContentSchema = z.object({
+  section: z.string(),
+  content: z.string(),
+});
+
+export type SectionContent = z.infer<typeof sectionContentSchema>;
