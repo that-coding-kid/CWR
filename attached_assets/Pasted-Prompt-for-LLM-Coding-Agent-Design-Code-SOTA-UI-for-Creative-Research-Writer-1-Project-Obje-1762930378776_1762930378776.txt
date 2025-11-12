@@ -1,0 +1,172 @@
+Prompt for LLM Coding Agent: Design & Code SOTA UI for "Creative Research Writer"
+1. 🎯 Project Objective
+Your task is to generate the code for a SOTA (State-of-the-Art) UI for a web application called "Creative Research Writer." This tool assists users in writing research papers through AI-powered brainstorming and feedback.
+
+2. 🎨 Design Philosophy & Aesthetics
+Inspiration: The UI should be modern, minimalist, and AI-native, inspired by the clean, component-driven aesthetic of tools like Anara.
+
+Theme: Dark mode first. The design should be clean, spacious, and text-focused.
+
+Font: Use a clean, sans-serif font like Inter.
+
+Icons: Use a modern icon library, preferably Lucide React (lucide-react).
+
+3. 🛠️ Technology Stack
+Framework: Next.js (or React)
+
+Language: TypeScript
+
+Styling: Tailwind CSS
+
+Components: Build a modular, component-based architecture.
+
+4. 🧱 Core App Structure (High-Level Layout)
+The application will use a responsive 3-column layout:
+
+Left Sidebar (Resizable): Contains reference management and the auto-summary panel.
+
+Main Content Area (Fluid): The central workspace that switches between "Brainstorming" and "Feedback" modes.
+
+Right Sidebar (Resizable): The context-aware panel for feedback and grading.
+
+5. 🧩 Detailed Component Breakdown
+Please generate the code for the following components. All LLM/backend logic should be mocked with placeholder functions and static data.
+
+A. layout.tsx (Root Layout)
+Manages the 3-column structure.
+
+Includes the top-level Header component.
+
+Manages the primary application state:
+
+currentMode: 'brainstorming' | 'feedback' (Default: 'brainstorming')
+
+This state will be passed down to child components to conditionally render content.
+
+B. Header.tsx
+Location: Fixed at the top of the page.
+
+Content:
+
+Left: Application Title/Logo (e.g., "Creative Research Writer").
+
+Center: The Mode Toggle. This is critical. Use a clean, segmented control (pill-shaped toggle) with two options:
+
+"Brainstorming" (with a sparkles icon)
+
+"Feedback" (with a check-square icon)
+
+This toggle controls the currentMode state in the parent layout.
+
+Right: User profile/avatar.
+
+C. LeftSidebar.tsx
+This sidebar is split into two sections:
+
+1. Reference_Papers.tsx:
+
+A heading: "My References".
+
+An "Add Reference" button (e.g., + or upload icon) to mock adding a paper.
+
+A scrollable list of mocked papers (e.g., "Vaswani et al. 2017.pdf", "Dosovitskiy et al. 2020.pdf").
+
+2. Tuned_Summary_Panel.tsx:
+
+A heading: "Auto-Summary".
+
+A "tuning..." or "updating..." animated indicator (e.g., a subtle pulsing dot) to show it's "periodically and automatically tuned."
+
+A scrollable div containing a mocked summary of the attached papers. (e.g., "The core concept from the references is the 'Transformer' architecture...").
+
+D. MainContentArea.tsx
+This component is the main workspace and renders its content conditionally based on the currentMode prop.
+
+If currentMode === 'brainstorming':
+
+Render the <BrainstormingMode /> component.
+
+If currentMode === 'feedback':
+
+Render the <FeedbackMode /> component.
+
+E. BrainstormingMode.tsx
+This component should resemble a modern chat interface.
+
+1. Idea Input: At the top, a clean textarea with the placeholder: "Tell me about your core idea, hypothesis, or research question..."
+
+2. Chat Display: Below the input, a scrollable chat window.
+
+Mock a "system" message: "Hello! Add your references and describe your idea. I'll ask questions to help you brainstorm."
+
+Mock an "LLM" message (as a question): "That's a fascinating start. Have you considered how you will measure [mock_variable_A] and its impact on [mock_variable_B]?"
+
+F. FeedbackMode.tsx
+This component is dominated by a large text editor.
+
+1. Section Selector: A dropdown menu (<select>) at the top.
+
+Label: "Current Section:"
+
+Options: "Abstract", "Introduction", "Methodology", "Results", "Discussion", "Conclusion", "Other".
+
+2. Text Editor:
+
+A large, clean textarea (or mock a rich text editor) filling the component.
+
+Placeholder: "Paste your written content here..."
+
+Populate it with 2-3 paragraphs of "Lorem Ipsum" text for visual layout.
+
+G. RightSidebar.tsx
+This component also renders conditionally based on the currentMode.
+
+If currentMode === 'brainstorming':
+
+The panel can be minimal. Perhaps show a "Tips" card.
+
+Example Card: "Brainstorming Tips: 1. Don't self-censor. 2. Focus on quantity. 3. Build on your references."
+
+If currentMode === 'feedback':
+
+Render the <FeedbackPanel /> component. This is its primary function.
+
+H. FeedbackPanel.tsx
+This is the most "data-rich" component. Split it into two parts:
+
+1. Grading_Panel.tsx:
+
+A heading: "Quality Score".
+
+A grid of 5 mock scores. For each score, display:
+
+Metric: (e.g., "Clarity", "Rigor", "Conciseness", "Novelty", "Structure")
+
+Score: (e.g., "8.5/10")
+
+Please style these as modern "stat cards" or use a compact list.
+
+2. Feedback_List.tsx:
+
+A heading: "Actionable Feedback".
+
+A scrollable list of "Feedback Cards."
+
+Mock 2-3 cards. Each card should contain:
+
+Title/Type: (e.g., "Suggestion: Improve Flow", "Critical: Cite Evidence")
+
+Feedback: (e.g., "The transition between paragraph 2 and 3 is abrupt. Consider adding a sentence to link the ideas.")
+
+Location: (e.g., "Section: Methodology")
+
+6. 🔁 Mocked Data & State
+All interactive elements (buttons, toggles) should be functional.
+
+Use useState to manage local component state (like the currentMode in the root layout).
+
+All data (paper lists, summaries, chat messages, scores, feedback) should be hard-coded as static/mock data for this UI-only task.
+
+Mock all onClick or onSubmit functions with a simple console.log('Function triggered').
+
+Please generate the code for these components, ensuring they are well-structured, written in TypeScript, and styled with Tailwind CSS to match the described SOTA, Anara-inspired aesthetic.
