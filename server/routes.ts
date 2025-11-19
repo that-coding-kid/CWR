@@ -74,6 +74,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(scores);
   });
 
+  app.post('/api/generate-scores', async (req, res) => {
+    const abstractContent = await storage.getSectionContent('Abstract');
+    await storage.generateScores(abstractContent);
+    const scores = await storage.getQualityScores();
+    res.json(scores);
+  });
+
+  app.post('/api/generate-feedback', async (req, res) => {
+    const abstractContent = await storage.getSectionContent('Abstract');
+    await storage.generateFeedback(abstractContent);
+    const feedback = await storage.getFeedback();
+    res.json(feedback);
+  });
+
   app.get('/api/section/:section', async (req, res) => {
     const { section } = req.params;
     const content = await storage.getSectionContent(section);

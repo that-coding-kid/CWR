@@ -53,11 +53,11 @@ export type FeedbackItem = z.infer<typeof feedbackItemSchema>;
 export type InsertFeedbackItem = z.infer<typeof insertFeedbackItemSchema>;
 
 export const qualityScoreSchema = z.object({
-  clarity: z.number(),
-  rigor: z.number(),
-  conciseness: z.number(),
-  novelty: z.number(),
-  structure: z.number(),
+  helpfulness: z.number(),
+  correctness: z.number(),
+  coherence: z.number(),
+  complexity: z.number(),
+  verbosity: z.number(),
 });
 
 export type QualityScore = z.infer<typeof qualityScoreSchema>;
