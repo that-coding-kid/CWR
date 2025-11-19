@@ -21,6 +21,7 @@ export const referencePaperSchema = z.object({
   id: z.string(),
   title: z.string(),
   name: z.string(),
+  fileSize: z.number().optional(),
 });
 
 export const insertReferencePaperSchema = referencePaperSchema.omit({ id: true });

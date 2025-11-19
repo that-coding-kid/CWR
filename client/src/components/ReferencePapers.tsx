@@ -1,4 +1,4 @@
-import { Plus, FileText, X } from "lucide-react";
+import { Plus, FileText, X, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -7,13 +7,15 @@ import type { ReferencePaper } from "@shared/schema";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ReferencePapers() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [name, setName] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const { data: papers = [], isLoading } = useQuery<ReferencePaper[]>({
@@ -21,13 +23,14 @@ export default function ReferencePapers() {
   });
 
   const addMutation = useMutation({
-    mutationFn: (data: { title: string; name: string }) => 
+    mutationFn: (data: { title: string; name: string; fileSize?: number }) => 
       apiRequest('/api/references', 'POST', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/references'] });
       setIsDialogOpen(false);
       setTitle('');
       setName('');
+      setSelectedFile(null);
       toast({
         title: "Reference added",
         description: "The paper has been added to your references.",
@@ -49,7 +52,22 @@ export default function ReferencePapers() {
 
   const handleAdd = () => {
     if (!title.trim() || !name.trim()) return;
-    addMutation.mutate({ title, name });
+    const fileSize = selectedFile ? selectedFile.size : undefined;
+    addMutation.mutate({ title, name, fileSize });
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setTitle(file.name);
+      const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+      setName(nameWithoutExt);
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -71,6 +89,25 @@ export default function ReferencePapers() {
               <DialogTitle>Add Reference</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Upload from Desktop</Label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleUploadClick}
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  {selectedFile ? selectedFile.name : 'Choose File'}
+                </Button>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="paper-title">File Name</Label>
                 <Input
