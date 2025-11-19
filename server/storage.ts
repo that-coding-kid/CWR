@@ -31,6 +31,9 @@ export interface IStorage {
   
   getSectionContent(section: string): Promise<string>;
   saveSectionContent(data: SectionContent): Promise<void>;
+  
+  getAutoSummary(): Promise<string>;
+  setAutoSummary(summary: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -41,6 +44,7 @@ export class MemStorage implements IStorage {
   private qualityScores: QualityScore;
   private sectionContents: Map<string, string>;
   private scoreVersion: number;
+  private autoSummary: string;
 
   constructor() {
     this.users = new Map();
@@ -49,6 +53,7 @@ export class MemStorage implements IStorage {
     this.feedbackItems = new Map();
     this.sectionContents = new Map();
     this.scoreVersion = 0;
+    this.autoSummary = '';
     
     this.qualityScores = {
       helpfulness: 3,
@@ -278,6 +283,14 @@ Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dolor
 
   async saveSectionContent(data: SectionContent): Promise<void> {
     this.sectionContents.set(data.section, data.content);
+  }
+
+  async getAutoSummary(): Promise<string> {
+    return this.autoSummary;
+  }
+
+  async setAutoSummary(summary: string): Promise<void> {
+    this.autoSummary = summary;
   }
 }
 

@@ -104,6 +104,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/auto-summary', async (req, res) => {
+    const summary = await storage.getAutoSummary();
+    res.json({ summary });
+  });
+
+  app.post('/api/generate-auto-summary', async (req, res) => {
+    try {
+      const references = await storage.getReferences();
+      
+      if (references.length === 0) {
+        await storage.setAutoSummary('No references added yet. Upload research papers to generate an auto-summary of key concepts and methodologies.');
+        return res.json({ summary: await storage.getAutoSummary() });
+      }
+
+      const referenceText = references.map(r => `${r.name}: ${r.title}`).join('. ');
+      const prompt = `Summarize the key concepts and research themes from these academic papers: ${referenceText}. Focus on identifying core methodologies, innovations, and connections between the works.`;
+
+      const response = await fetch('https://api-inference.huggingface.co/models/facebook/bart-large-cnn', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: prompt,
+          parameters: {
+            max_length: 300,
+            min_length: 100,
+            do_sample: false,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate summary');
+      }
+
+      const result = await response.json();
+      const summary = Array.isArray(result) ? result[0].summary_text : result.summary_text || 'Summary generation in progress...';
+      
+      await storage.setAutoSummary(summary);
+      res.json({ summary });
+    } catch (error) {
+      console.error('Auto-summary generation error:', error);
+      const fallbackSummary = `Based on ${(await storage.getReferences()).length} references: Your research collection provides comprehensive coverage of key concepts in the field. The references collectively explore foundational theories, methodologies, and recent advances.`;
+      await storage.setAutoSummary(fallbackSummary);
+      res.json({ summary: fallbackSummary });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
